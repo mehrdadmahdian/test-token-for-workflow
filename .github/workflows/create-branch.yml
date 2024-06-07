@@ -1,0 +1,49 @@
+name: Create Branch on Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  create-branch:
+    if: startsWith(github.event.comment.body, '/create-branch')
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+
+    - name: Get issue details
+      id: issue
+      run: |
+        echo "title=${{ github.event.issue.title }}" >> $GITHUB_ENV
+        echo "number=${{ github.event.issue.number }}" >> $GITHUB_ENV
+
+    - name: Generate branch name
+      id: generate_branch_name
+      run: |
+        ISSUE_TITLE="${{ env.title }}"
+        ISSUE_NUMBER="${{ env.number }}"
+        BRANCH_NAME="planit-${ISSUE_NUMBER}-$(echo "$ISSUE_TITLE" | tr -cd '[:alnum:]-' | tr ' ' '-')"
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+
+    - name: Create new branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+      run: |
+        echo "secret: ${{ secrets.ACTION_TOKEN }}"
+        echo "env: ${{ env.GITHUB_TOKEN }}"
+        BRANCH_NAME="${{ env.branch_name }}"
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git fetch origin
+        git checkout -b "$BRANCH_NAME"
+        git push origin "$BRANCH_NAME"
+
+    - name: Comment on the issue
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+      run: |
+        ISSUE_NUMBER="${{ env.number }}"
+        BRANCH_NAME="${{ env.branch_name }}"
+        curl -X POST -H "Authorization: token $GITHUB_TOKEN" -d "{\"body\": \"Branch [$BRANCH_NAME](https://github.com/${{ github.repository }}/tree/$BRANCH_NAME) created.\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments"
