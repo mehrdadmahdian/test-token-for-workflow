@@ -36,4 +36,4 @@ jobs:
         git config --global user.email "mahdian.mhd@gmail.com"
         git fetch origin
         git checkout -b "$BRANCH_NAME"
-        git push https://mehrdadmahdian:${GH_TOKEN}@github.com/mehrdadmahdian/test-token-for-workflow "$BRANCH_NAME"
+        git push https://mehrdadmahdian:{{secrets.ACTION_TOKEN}}@github.com/mehrdadmahdian/test-token-for-workflow "$BRANCH_NAME"
