@@ -33,7 +33,7 @@ jobs:
       run: |
         BRANCH_NAME="${{ env.branch_name }}"
         git config --global user.name "mehrdad mahdian"
-        git config --global user.email "mahdian.mhd@gmail.com
+        git config --global user.email "mahdian.mhd@gmail.com"
         git fetch origin
         git checkout -b "$BRANCH_NAME"
         git push origin "$BRANCH_NAME"
