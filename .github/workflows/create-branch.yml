@@ -29,11 +29,11 @@ jobs:
 
     - name: Create new branch
       env:
-        GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.NEW_ACTION_TOKEN }}
       run: |
         BRANCH_NAME="${{ env.branch_name }}"
         git config --global user.name "mehrdad mahdian"
         git config --global user.email "mahdian.mhd@gmail.com"
         git fetch origin
         git checkout -b "$BRANCH_NAME"
-        git push https://mehrdadmahdian:{{secrets.ACTION_TOKEN}}@github.com/mehrdadmahdian/test-token-for-workflow "$BRANCH_NAME"
+        git push origin "$BRANCH_NAME"
