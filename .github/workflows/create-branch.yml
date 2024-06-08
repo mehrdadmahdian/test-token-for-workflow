@@ -29,7 +29,7 @@ jobs:
 
     - name: Create new branch
       env:
-        GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         BRANCH_NAME="${{ env.branch_name }}"
         git config --global user.name "github-actions[bot]"
@@ -40,7 +40,7 @@ jobs:
 
     - name: Comment on the issue
       env:
-        GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ISSUE_NUMBER="${{ env.number }}"
         BRANCH_NAME="${{ env.branch_name }}"
