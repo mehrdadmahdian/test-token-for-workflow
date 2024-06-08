@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.NEW_ACTION_TOKEN }}
 
     - name: Get issue details
       id: issue
