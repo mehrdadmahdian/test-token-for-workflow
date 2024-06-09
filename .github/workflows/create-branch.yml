@@ -26,7 +26,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.NEW_ACTION_TOKEN }}
       run: |
         git fetch --all
-        BASE_BRANCH_NAME="API-${{env.number}}-$(echo "${{env.title}}" | tr -cd '[:alnum:]-' | tr ' ' '-')"
+        BASE_BRANCH_NAME="API-${{ env.number }}-$(echo "${{ env.title }}" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]- ' | tr ' ' '-')"
         EXISTING_BRANCHES=$(git branch -r | grep "origin/$BASE_BRANCH_NAME" | sed 's/.*\///')
         if [[ -z "$EXISTING_BRANCHES" ]]; then
           NEW_BRANCH_NAME="$BASE_BRANCH_NAME"
