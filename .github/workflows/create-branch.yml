@@ -22,20 +22,12 @@ jobs:
         echo "number=${{ github.event.issue.number }}" >> $GITHUB_ENV
 
     - name: Get existing branches
-      id: branches
+      env:
+        GITHUB_TOKEN: ${{ secrets.NEW_ACTION_TOKEN }}
       run: |
-        BRANCH_NAME="API-${ISSUE_NUMBER}-$(echo "$ISSUE_TITLE" | tr -cd '[:alnum:]-' | tr ' ' '-')"
-        echo "Base branch name: $BRANCH_NAME"
         git fetch --all
-        EXISTING_BRANCHES=$(git branch -r | grep "origin/$BRANCH_NAME" | sed 's/.*\///')
-        echo "Existing branches: $EXISTING_BRANCHES"
-        echo "::set-output name=existing_branches::$EXISTING_BRANCHES"
-
-    - name: Determine new branch name
-      id: new-branch
-      run: |
-        BASE_BRANCH_NAME="API-${ISSUE_NUMBER}-$(echo "$ISSUE_TITLE" | tr -cd '[:alnum:]-' | tr ' ' '-')"
-        EXISTING_BRANCHES="${{ steps.branches.outputs.existing_branches }}"
+        BASE_BRANCH_NAME="API-${{env.number}}-$(echo "${{env.title}}" | tr -cd '[:alnum:]-' | tr ' ' '-')"
+        EXISTING_BRANCHES=$(git branch -r | grep "origin/$BASE_BRANCH_NAME" | sed 's/.*\///')
         if [[ -z "$EXISTING_BRANCHES" ]]; then
           NEW_BRANCH_NAME="$BASE_BRANCH_NAME"
         else
@@ -51,12 +43,6 @@ jobs:
           NEW_BRANCH_NAME="$BASE_BRANCH_NAME-$((MAX + 1))"
         fi
         echo "New branch name: $NEW_BRANCH_NAME"
-        echo "::set-output name=new_branch_name::$NEW_BRANCH_NAME"
-
-    - name: Create new branch
-      env:
-        GITHUB_TOKEN: ${{ secrets.NEW_ACTION_TOKEN }}
-      run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         NEW_BRANCH_NAME="${{ steps.new-branch.outputs.new_branch_name }}"
