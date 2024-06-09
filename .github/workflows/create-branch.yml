@@ -25,6 +25,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.NEW_ACTION_TOKEN }}
       run: |
+        if [[ "${{ steps.issue.outputs.status }}" != "open" ]]; then
+            echo "Issue is not open."
+            curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"body\": "Issue is not open and creating branch is not possible."}" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{env.number}}/comments"
+            exit 1
+        fi
         git fetch --all
         BASE_BRANCH_NAME="API-${{env.number}}-$(echo "${{env.title}}" | tr -cd '[:alnum:]-' | tr ' ' '-')"
         EXISTING_BRANCHES=$(git branch -r | grep "origin/$BASE_BRANCH_NAME" | sed 's/.*\///')
